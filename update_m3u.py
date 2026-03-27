@@ -10,10 +10,12 @@ HEADERS = {
 def get_stream():
     r = requests.get(URL, headers=HEADERS)
 
-    match = re.search(r'https://cce\.noisypeak\.com/hls/.*?/m\.m3u8', r.text)
+    # buscar cualquier m3u8 (más amplio)
+    matches = re.findall(r'https://[^\s"]+\.m3u8[^\s"]*', r.text)
 
-    if match:
-        return match.group(0)
+    if matches:
+        print("Encontrados:", matches)
+        return matches[0]
 
     return None
 
@@ -31,3 +33,5 @@ if __name__ == "__main__":
         update_playlist(link)
     else:
         print("❌ No se encontró el stream")
+
+print(r.text[:2000])
