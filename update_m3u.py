@@ -18,26 +18,30 @@ def get_stream():
 
         r = requests.get(url, headers=headers, timeout=10)
 
-        matches = re.findall(r'https://cce\.noisypeak\.com/hls/[A-Z0-9]+/[A-Z0-9]+/m\.m3u8', r.text)
+        # buscar tokens tipo /hls/XXXXXXX/
+        tokens = re.findall(r'/hls/([A-Z0-9]+)/', r.text)
 
-        if matches:
-            print("🔎 Streams encontrados:")
-            for m in matches:
-                print(m)
+        if not tokens:
+            print("❌ No se encontraron tokens")
+            return None
 
-            # agarramos el último (suele ser el bueno)
-            stream = matches[-1]
-            print(f"\n✅ Usando stream:\n{stream}")
-            return stream
+        # eliminar duplicados manteniendo orden
+        tokens = list(dict.fromkeys(tokens))
 
-        print("❌ No se encontró stream válido")
-        return None
+        # usar el último (más reciente)
+        token = tokens[-1]
+
+        stream = f"https://cce.noisypeak.com/hls/{token}/m.m3u8"
+
+        print(f"✅ Token encontrado: {token}")
+        print(f"🎬 Stream: {stream}")
+
+        return stream
 
     except Exception as e:
         print(f"❌ Error: {e}")
         return None
-
-
+        
 def write_m3u(url):
     content = f"""#EXTM3U
 #EXTINF:-1 tvg-id="truetv" tvg-name="TrueTV",TrueTV
