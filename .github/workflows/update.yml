@@ -27,6 +27,8 @@ jobs:
         run: |
           git config --global user.name "bot"
           git config --global user.email "bot@github.com"
-          git add truetv.m3u
+          git add . || true
+          - name: Ver archivos
+          run: ls -la
           git commit -m "update stream" || echo "no changes"
           git push
