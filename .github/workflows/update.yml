@@ -1,0 +1,33 @@
+name: Update IPTV
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"  # cada 4 horas
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Instalar requests
+        run: pip install requests
+
+      - name: Ejecutar script
+        run: python update_m3u.py
+
+      - name: Commit cambios
+        run: |
+          git config --global user.name "bot"
+          git config --global user.email "bot@github.com"
+          git add truetv.m3u
+          git commit -m "update stream" || echo "no changes"
+          git push
