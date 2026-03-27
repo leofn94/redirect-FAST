@@ -1,5 +1,7 @@
 import requests
 import re
+import os
+
 
 OUTPUT_FILE = "truetv.m3u"
 
@@ -64,8 +66,14 @@ def main():
     stream = get_stream()
 
     if not stream:
-        print("❌ No se pudo obtener el stream")
-        return
+        print("⚠️ No se pudo obtener stream nuevo")
+
+        if os.path.exists(OUTPUT_FILE):
+            print("♻️ Manteniendo stream anterior")
+            return
+        else:
+            print("❌ No hay archivo previo, usando dummy")
+            stream = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
 
     write_m3u(stream)
 
