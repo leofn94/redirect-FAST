@@ -10,40 +10,28 @@ CHANNEL_ID = "434159"
 
 def get_stream():
     try:
-        # Endpoint interno (esto es lo importante)
-        api_url = f"https://api.truetvplus.com/api/v1/channels/{CHANNEL_ID}"
+        url = "https://play.truetvplus.com/live-tv?channelId=434159"
 
         headers = {
             "User-Agent": "Mozilla/5.0"
         }
 
-        r = requests.get(api_url, headers=headers, timeout=10)
+        r = requests.get(url, headers=headers, timeout=10)
 
-        if r.status_code != 200:
-            print(f"❌ Error API: {r.status_code}")
-            return None
+        matches = re.findall(r'https://cce\.noisypeak\.com/hls/[A-Z0-9]+/[A-Z0-9]+/m\.m3u8', r.text)
 
-        data = r.json()
+        if matches:
+            print("🔎 Streams encontrados:")
+            for m in matches:
+                print(m)
 
-        # 🔥 buscar el stream dentro del JSON
-        stream_url = None
+            # agarramos el último (suele ser el bueno)
+            stream = matches[-1]
+            print(f"\n✅ Usando stream:\n{stream}")
+            return stream
 
-        if "streamUrl" in data:
-            stream_url = data["streamUrl"]
-
-        # fallback por si cambia estructura
-        if not stream_url:
-            text = str(data)
-            match = re.search(r'https://[^\s"]+\.m3u8', text)
-            if match:
-                stream_url = match.group(0)
-
-        if stream_url:
-            print(f"✅ Stream encontrado:\n{stream_url}")
-            return stream_url
-        else:
-            print("❌ No se encontró el stream en la API")
-            return None
+        print("❌ No se encontró stream válido")
+        return None
 
     except Exception as e:
         print(f"❌ Error: {e}")
