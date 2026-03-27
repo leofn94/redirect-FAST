@@ -9,7 +9,7 @@ HEADERS = {
 
 def get_stream():
     r = requests.get(URL, headers=HEADERS)
-
+    print(r.text[:2000])
     # buscar cualquier m3u8 (más amplio)
     matches = re.findall(r'https://[^\s"]+\.m3u8[^\s"]*', r.text)
 
@@ -34,4 +34,3 @@ if __name__ == "__main__":
     else:
         print("❌ No se encontró el stream")
 
-print(r.text[:2000])
